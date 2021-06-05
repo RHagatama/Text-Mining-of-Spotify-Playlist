@@ -8,6 +8,9 @@ library(topicmodels)
 playlist <- read_csv("my_playlist.csv")
 playlist
 
+playlist |>
+  count(artist, sort = T)
+
 ## Input API token
 genius_token()
 
@@ -38,7 +41,14 @@ while (length(song_id) > 0) {
 add_stop_words <- tribble(
   ~word, ~lexicon,
   "ooh", "custom",
-  "whoa", "custom"
+  "whoa", "custom",
+  "yeah", "custom",
+  "woohhhh", "custom",
+  "la", "custom",
+  "da", "custom",
+  "mmm", "custom",
+  "ay", "custom",
+  "hoo", "custom"
 )
 
 stop_words2 <- stop_words |>
@@ -102,7 +112,7 @@ ggplot(sentiments_count2, aes(sentiment2, n)) +
   geom_col() +
   coord_flip()
 
-## Sentiment Analysis
+## Topic Modelling Analysis
 # Make dtm
 lyrics_mx <- lyrics_tidy |>
   count(song_id, word) |>
@@ -111,7 +121,7 @@ lyrics_mx <- lyrics_tidy |>
 
 lda_topics <- lyrics_mx |>
   LDA(
-    k = 2, 
+    k = 8, 
     method = "Gibbs",
     control = list(seed = 123)
   ) |>
@@ -121,7 +131,7 @@ lda_topics <- lyrics_mx |>
 # Visualisasi
 word_prob <- lda_topics |>
   group_by(topic) |>
-  top_n(15, beta) |>
+  top_n(10, beta) |>
   ungroup() |>
   mutate(term2 = fct_reorder(term, beta))
 
